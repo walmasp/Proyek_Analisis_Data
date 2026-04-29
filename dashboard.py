@@ -3,17 +3,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-# ==========================================
+ 
 # SETUP HALAMAN STREAMLIT
-# ==========================================
+ 
 st.set_page_config(page_title="Bike Sharing Dashboard", page_icon="🚲", layout="wide")
 
 # Mengatur tema seaborn untuk semua visualisasi
 sns.set_theme(style="whitegrid", context="talk")
 
-# ==========================================
+ 
 # LOAD DAN CLEANING DATA
-# ==========================================
+ 
 @st.cache_data
 def load_data():
     # MENGGUNAKAN NAMA FILE YANG TEPAT
@@ -42,9 +42,9 @@ def load_data():
 
 day_df, hour_df = load_data()
 
-# ==========================================
+ 
 # SIDEBAR UNTUK INTERAKTIF
-# ==========================================
+ 
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2972/2972185.png", width=150)
     st.title("🚲 Bike Sharing")
@@ -71,22 +71,22 @@ with st.sidebar:
         "Pilih Musim:",
         options=list(season_mapping.keys()),
         format_func=lambda x: season_mapping[x],
-        index=0 # Default ke 1 untuk menyamakan dengan visualisasi notebook sebelumnya
+        index=0 
     )
 
     st.markdown("---")
     st.markdown("**Pembuat:** Alma Wulan Saptaningrum")
-    st.markdown("**ID Cohort:** CDCC297D6X1782")
+    st.markdown("**ID Cohort:** cdcc297d6x1782")
 
-# ==========================================
+ 
 # FILTERING DATA BERDASARKAN SIDEBAR
-# ==========================================
+ 
 main_day_df = day_df[(day_df['year'] == selected_year) & (day_df['season'] == selected_season)].copy()
 main_hour_df = hour_df[(hour_df['year'] == selected_year) & (hour_df['season'] == selected_season)].copy()
 
-# ==========================================
+ 
 # MENAMPILKAN DATA MENTAH (Jika dicentang)
-# ==========================================
+ 
 if show_data:
     st.header("Raw Data Preview")
     st.write(f"Menampilkan data untuk Tahun **{'2011' if selected_year == 0 else '2012'}** dan Musim **{season_mapping[selected_season]}**")
@@ -105,17 +105,17 @@ if show_data:
     
     st.markdown("---")
 
-# ==========================================
+ 
 # HEADER UTAMA
-# ==========================================
+ 
 st.title("🚲 Bike Sharing Data Dashboard")
 st.markdown("Dashboard ini menyajikan hasil analisis data penyewaan sepeda. Warna visualisasi diatur secara otomatis untuk menyoroti nilai tertinggi (Biru) dan terendah (Merah).")
 
 col1, col2 = st.columns(2)
 
-# ==========================================
+ 
 # VISUALISASI 1: PENGARUH CUACA
-# ==========================================
+ 
 with col1:
     st.subheader("1. Pengaruh Cuaca terhadap Penyewaan")
     
@@ -155,7 +155,6 @@ with col1:
     ax1.set_xlabel("Kondisi Cuaca", fontsize=12, fontweight='bold')
     ax1.set_ylabel("Rata-rata Penyewaan (Unit)", fontsize=12, fontweight='bold')
     
-    # Wrap text label sumbu x agar tidak bertumpuk
     import textwrap
     labels = [textwrap.fill(label.get_text(), 12) for label in ax1.get_xticklabels()]
     ax1.set_xticklabels(labels)
@@ -163,16 +162,15 @@ with col1:
     sns.despine()
     st.pyplot(fig1)
     
-    # Menambahkan Insight dari Notebook
     with st.expander("💡 Lihat Insight Cuaca"):
         st.write("""
         **Kesimpulan Analisis:**
         Terlihat dengan jelas bahwa **kondisi cuaca sangat memengaruhi tingkat penyewaan sepeda**. Penyewaan mencapai angka tertinggi (rata-rata maksimal) ketika cuaca sedang cerah atau berawan. Sebaliknya, saat kondisi cuaca memburuk seperti turun salju atau hujan ringan, rata-rata penyewaan turun sangat drastis (ditandai dengan warna merah).
         """)
 
-# ==========================================
+ 
 # VISUALISASI 2: JAM SIBUK PENGGUNA KASUAL
-# ==========================================
+ 
 with col2:
     st.subheader("2. Jam Sibuk Casual Users (Akhir Pekan/Libur)")
     
@@ -207,9 +205,9 @@ with col2:
 
 st.markdown("---")
 
-# ==========================================
+ 
 # VISUALISASI 3: CLUSTERING (DAYPARTING)
-# ==========================================
+ 
 st.subheader("3. Analisis Lanjutan: Distribusi Penyewaan Berdasarkan Waktu (Dayparting)")
 
 st.info("""
@@ -235,7 +233,6 @@ main_hour_df['daypart'] = pd.Categorical(main_hour_df['daypart'], categories=['M
 
 daypart_rentals = main_hour_df.groupby('daypart', observed=True)['total_count'].sum().reset_index()
 
-# Logika Warna Terarah
 max_daypart_val = daypart_rentals['total_count'].max()
 min_daypart_val = daypart_rentals['total_count'].min()
 
@@ -244,7 +241,7 @@ for val in daypart_rentals['total_count']:
     if val == max_daypart_val:
         colors3.append("#3498DB") # Biru
     elif val == min_daypart_val:
-        colors3.append("#E74C3C") # Merah
+        colors3.append("#D3D3D3") # Abu-abu
     else:
         colors3.append("#D3D3D3") # Abu-abu
 
@@ -257,7 +254,7 @@ sns.barplot(
     edgecolor="black"
 )
 
-# Menambahkan pemisah ribuan/jutaan pada sumbu Y
+# Menambahkan pemisah ribuan pada sumbu Y
 ylabels = ['{:,.0f}'.format(y) for y in ax3.get_yticks()]
 ax3.set_yticklabels(ylabels)
 
@@ -267,7 +264,6 @@ ax3.set_ylabel("Total Penyewaan (Unit)", fontsize=12, fontweight='bold')
 sns.despine()
 st.pyplot(fig3)
 
-# Menambahkan Insight dari Notebook
 with st.expander("💡 Lihat Insight Pengelompokan Waktu"):
     st.write("""
     **Kesimpulan Analisis:**
